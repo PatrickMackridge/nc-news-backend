@@ -97,6 +97,48 @@ describe("formatDates", () => {
   });
 });
 
-describe("makeRefObj", () => {});
+describe("makeRefObj", () => {
+  it("returns an empty object when passed an empty array", () => {
+    expect(makeRefObj([])).to.eql({});
+  });
+  it("returns an empty object when passed an array with an empty object", () => {
+    expect(makeRefObj([{}])).to.eql({});
+  });
+  it("returns an object with a single key-value pair when passed an array with one object", () => {
+    expect(
+      makeRefObj([
+        {
+          article_id: 1,
+          title: "Why I will never hire a cat"
+        }
+      ])
+    ).to.eql({ "Why I will never hire a cat": 1 });
+  });
+  it("returns an object with a single key-value pair when passed an array with one object", () => {
+    expect(
+      makeRefObj([
+        {
+          article_id: 1,
+          title: "Why I will never hire a cat"
+        },
+        {
+          article_id: 2,
+          title:
+            "This man was about to take a bite of his sandwich - you won't believe what happened next!"
+        },
+        {
+          article_id: 3,
+          title:
+            "Liquiditch - The new water sport taking the Italian Riviera by storm!"
+        },
+        {}
+      ])
+    ).to.eql({
+      "Why I will never hire a cat": 1,
+      "This man was about to take a bite of his sandwich - you won't believe what happened next!": 2,
+      "Liquiditch - The new water sport taking the Italian Riviera by storm!": 3
+    });
+  });
+});
 
 describe("formatComments", () => {});

@@ -9,6 +9,14 @@ exports.formatDates = list => {
   return list;
 };
 
-exports.makeRefObj = list => {};
+exports.makeRefObj = list => {
+  const refObj = {};
+  list.forEach(article => {
+    if (article.article_id !== undefined) {
+      refObj[article.title] = article.article_id;
+    }
+  });
+  return refObj;
+};
 
 exports.formatComments = (comments, articleRef) => {};
