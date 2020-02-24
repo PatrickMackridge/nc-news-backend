@@ -7,4 +7,7 @@ exports.up = function(knex) {
   });
 };
 
-exports.down = function(knex) {};
+exports.down = function(knex) {
+  console.log("removing users table");
+  return knex.schema.dropTable("users");
+};
