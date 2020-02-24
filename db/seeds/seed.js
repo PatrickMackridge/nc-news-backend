@@ -3,18 +3,25 @@ const {
   articleData,
   commentData,
   userData
-} = require('../data/index.js');
+} = require("../data/index.js");
 
-const { formatDates, formatComments, makeRefObj } = require('../utils/utils');
+const { formatDates, formatComments, makeRefObj } = require("../utils/utils");
 
 exports.seed = function(knex) {
-  const topicsInsertions = knex('topics').insert(topicData);
-  const usersInsertions = knex('users').insert(userData);
-
-  return Promise.all([topicsInsertions, usersInsertions])
+  return knex.migrate
+    .rollback()
+    .then(() => knex.migrate.latest())
     .then(() => {
+      const topicsInsertions = knex("topics")
+        .insert(topicData)
+        .returning("*");
+      const usersInsertions = knex("users")
+        .insert(userData)
+        .returning("*");
+      return Promise.all([topicsInsertions, usersInsertions]);
+    })
+    .then(([topicRows, userRows]) => {
       /* 
-      
       Your article data is currently in the incorrect format and will violate your SQL schema. 
       
       You will need to write and test the provided formatDate utility function to be able insert your article data.
@@ -34,6 +41,6 @@ exports.seed = function(knex) {
 
       const articleRef = makeRefObj(articleRows);
       const formattedComments = formatComments(commentData, articleRef);
-      return knex('comments').insert(formattedComments);
+      return knex("comments").insert(formattedComments);
     });
 };
