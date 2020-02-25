@@ -22,4 +22,32 @@ describe("/api", () => {
         });
     });
   });
+  describe("/users", () => {
+    describe("/:username", () => {
+      it("GET 200 - responds with the user object corresponding to the given username", () => {
+        return request(app)
+          .get("/api/users/butter_bridge")
+          .expect(200)
+          .then(result => {
+            expect(result.body.user).to.be.an("Object");
+            expect(result.body.user).to.contain.keys(
+              "username",
+              "avatar_url",
+              "name"
+            );
+          });
+      });
+      it("GET 404 - responds with an error when given a non-existent username", () => {
+        return request(app)
+          .get("/api/users/not-a-yuser")
+          .expect(404)
+          .then(result => {
+            expect(result.body).to.eql({
+              msg: "This user does not exist",
+              status: 404
+            });
+          });
+      });
+    });
+  });
 });

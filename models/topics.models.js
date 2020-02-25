@@ -5,7 +5,6 @@ exports.fetchTopics = () => {
     .select("*")
     .returning("*")
     .then(topics => {
-      console.log(topics, "MODEL");
       return topics;
     });
 };
