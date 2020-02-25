@@ -20,7 +20,7 @@ exports.seed = function(knex) {
         .returning("*");
       return Promise.all([topicsInsertions, usersInsertions]);
     })
-    .then(([topicRows, userRows]) => {
+    .then(() => {
       const formattedArticles = formatDates(articleData);
       const articleInsertions = knex("articles")
         .insert(formattedArticles)
@@ -30,6 +30,6 @@ exports.seed = function(knex) {
     .then(articleRows => {
       const articleRef = makeRefObj(articleRows);
       const formattedComments = formatComments(commentData, articleRef);
-      const commentRows = knex("comments").insert(formattedComments);
+      return knex("comments").insert(formattedComments);
     });
 };
