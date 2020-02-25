@@ -2,11 +2,14 @@ process.env.NODE_ENV = "test";
 const { expect } = require("chai");
 
 exports.formatDates = list => {
+  const formattedList = [];
   list.forEach(object => {
-    const dateString = new Date(object.created_at).toUTCString();
-    object.created_at = dateString;
+    const newObj = { ...object };
+    const dateString = new Date(newObj.created_at).toUTCString();
+    newObj.created_at = dateString;
+    formattedList.push(newObj);
   });
-  return list;
+  return formattedList;
 };
 
 exports.makeRefObj = list => {
@@ -19,4 +22,15 @@ exports.makeRefObj = list => {
   return refObj;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, articleRef) => {
+  formattedComments = [];
+  comments.forEach(comment => {
+    comment.article_id = articleRef[comment.belongs_to];
+    comment.author = comment.created_by;
+    delete comment.belongs_to;
+    delete comment.created_by;
+    formattedComments.push(comment);
+  });
+  const commentsWithDates = this.formatDates(formattedComments);
+  return commentsWithDates;
+};
