@@ -8,7 +8,6 @@ exports.fetchArticleById = ({ article_id }) => {
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
     .where({ "articles.article_id": article_id })
-    .returning("*")
     .then(articleArr => {
       if (articleArr.length === 0) {
         return Promise.reject({
@@ -17,5 +16,21 @@ exports.fetchArticleById = ({ article_id }) => {
         });
       }
       return articleArr[0];
+    });
+};
+
+exports.updateArticle = ({ article_id }, { inc_votes }) => {
+  return connection("articles")
+    .increment({ votes: inc_votes })
+    .where({ article_id: article_id })
+    .returning("*")
+    .then(updatedArticle => {
+      if (updatedArticle.length === 0) {
+        return Promise.reject({
+          msg: "This article does not exist",
+          status: 404
+        });
+      }
+      return updatedArticle[0];
     });
 };
