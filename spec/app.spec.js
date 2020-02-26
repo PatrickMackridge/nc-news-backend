@@ -1,7 +1,10 @@
 process.env.NODE_ENV = "test";
 const request = require("supertest");
 const chai = require("chai");
+const chaiSorted = require("sams-chai-sorted");
 const { expect } = chai;
+
+chai.use(chaiSorted);
 
 const connection = require("../db/connection");
 const app = require("../app");
@@ -169,6 +172,83 @@ describe("/api", () => {
           .then(res => {
             expect(res.body).to.eql({ msg: "Invalid data input type" });
           });
+      });
+      describe("/comments", () => {
+        it("POST 200 - posts a new comment to the article specified by the article_id parameter", () => {
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+              username: "butter_bridge",
+              body: "This article changed my life - FOR THE WORSE!!!"
+            })
+            .expect(200)
+            .then(res => {
+              expect(res.body.comment).to.have.all.keys([
+                "article_id",
+                "author",
+                "body",
+                "comment_id",
+                "created_at",
+                "votes"
+              ]);
+            });
+        });
+        it("POST 400 - throws an error when given an invalid article id", () => {
+          return request(app)
+            .post("/api/articles/articleNumber5/comments")
+            .send({
+              username: "butter_bridge",
+              body: "This article changed my life - FOR THE WORSE!!!"
+            })
+            .expect(400)
+            .then(res => {
+              expect(res.body).to.eql({ msg: "Invalid data input type" });
+            });
+        });
+        it("POST 404 - throws an error when given a non-existent article id", () => {
+          return request(app)
+            .post("/api/articles/999/comments")
+            .send({
+              username: "butter_bridge",
+              body: "This article changed my life - FOR THE WORSE!!!"
+            })
+            .expect(400)
+            .then(res => {
+              expect(res.body).to.eql({
+                msg: "Invalid input data"
+              });
+            });
+        });
+        it("POST 400 - throws an error when given a non-existent username", () => {
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+              username: "U.Z.A",
+              body: "This article changed my life - FOR THE WORSE!!!"
+            })
+            .expect(400)
+            .then(res => {
+              expect(res.body).to.eql({
+                msg: "Invalid input data"
+              });
+            });
+        });
+        it("POST 400 - throws an error when given an invalid key", () => {
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+              username: "butter_bridge",
+              whatTheCommentSays:
+                "This article changed my life - FOR THE WORSE!!!"
+            })
+            .expect(400)
+            .then(res => {
+              expect(res.body).to.eql({
+                status: 400,
+                msg: "Invalid input data"
+              });
+            });
+        });
       });
     });
   });
