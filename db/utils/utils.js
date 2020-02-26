@@ -25,11 +25,12 @@ exports.makeRefObj = list => {
 exports.formatComments = (comments, articleRef) => {
   formattedComments = [];
   comments.forEach(comment => {
-    comment.article_id = articleRef[comment.belongs_to];
-    comment.author = comment.created_by;
-    delete comment.belongs_to;
-    delete comment.created_by;
-    formattedComments.push(comment);
+    newComment = { ...comment };
+    newComment.article_id = articleRef[newComment.belongs_to];
+    newComment.author = newComment.created_by;
+    delete newComment.belongs_to;
+    delete newComment.created_by;
+    formattedComments.push(newComment);
   });
   const commentsWithDates = this.formatDates(formattedComments);
   return commentsWithDates;

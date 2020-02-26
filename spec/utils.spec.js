@@ -281,6 +281,7 @@ describe("formatComments", () => {
         created_at: "Wed, 22 Nov 2017 12:36:03 GMT"
       }
     ];
-    expect(formatComments(comments, refObj)).to.eql(formattedComments);
+    result = formatComments(comments, refObj);
+    expect(result).to.eql(formattedComments);
   });
 });
