@@ -1,6 +1,7 @@
 const {
   addNewComment,
-  fetchCommentsByArticleId
+  fetchCommentsByArticleId,
+  updateCommentVotesById
 } = require("../models/comments.models");
 
 exports.postComment = (req, res, next) => {
@@ -21,6 +22,18 @@ exports.getCommentsByArticle = (req, res, next) => {
   fetchCommentsByArticleId(article_id, queries)
     .then(comments => {
       res.status(200).send({ comments });
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+exports.patchCommentVotesById = (req, res, next) => {
+  const comment_id = req.params;
+  const inc_votes = req.body;
+  updateCommentVotesById(comment_id, inc_votes)
+    .then(comment => {
+      res.status(200).send({ comment });
     })
     .catch(err => {
       next(err);

@@ -15,7 +15,7 @@ describe("/api", () => {
     return connection.seed.run();
   });
   describe("/topics", () => {
-    it("GET 200 - responds with an object that contains an array if all topic objects with slug and description", () => {
+    it("GET 200 - responds with an object that contains an array of all topic objects with slug and description", () => {
       return request(app)
         .get("/api/topics")
         .expect(200)
@@ -55,7 +55,7 @@ describe("/api", () => {
       });
     });
   });
-  describe.only("/articles", () => {
+  describe("/articles", () => {
     it("GET 200 - returns an array of all articles, defaulting to sorted by most recent first", () => {
       return request(app)
         .get("/api/articles")
@@ -437,6 +437,87 @@ describe("/api", () => {
               });
             });
         });
+      });
+    });
+  });
+  describe("/comments", () => {
+    describe.only("/:comment_id", () => {
+      it("PATCH 200 - Updates the vote property of the comment specified by given id by the given amount and returns the updated comment object", () => {
+        return request(app)
+          .patch("/api/comments/2")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(res => {
+            expect(res.body.comment).to.have.all.keys([
+              "comment_id",
+              "author",
+              "article_id",
+              "votes",
+              "created_at",
+              "body"
+            ]);
+            expect(res.body.comment.comment_id).to.equal(2);
+            expect(res.body.comment.votes).to.equal(15);
+          });
+      });
+      it("PATCH 200 - Updates the vote property of the comment specified by given id by negative amount and returns the updated comment object", () => {
+        return request(app)
+          .patch("/api/comments/2")
+          .send({ inc_votes: -4 })
+          .expect(200)
+          .then(res => {
+            expect(res.body.comment).to.have.all.keys([
+              "comment_id",
+              "author",
+              "article_id",
+              "votes",
+              "created_at",
+              "body"
+            ]);
+            expect(res.body.comment.comment_id).to.equal(2);
+            expect(res.body.comment.votes).to.equal(10);
+          });
+      });
+      it("PATCH 400 - throws an error when inc_votes is set to an invalid value", () => {
+        return request(app)
+          .patch("/api/comments/2")
+          .send({ inc_votes: "LOADS OF VOTES!" })
+          .expect(400)
+          .then(res => {
+            expect(res.body).to.eql({ msg: "Invalid input data" });
+          });
+      });
+      it("PATCH 400 - throws an error when trying to update a value other than inc_votes", () => {
+        return request(app)
+          .patch("/api/comments/2")
+          .send({ username: "newUser" })
+          .expect(400)
+          .then(res => {
+            expect(res.body).to.eql({ msg: "Invalid input data" });
+          });
+      });
+      it("PATCH 400 - throws an error when given an invalid comment id", () => {
+        return request(app)
+          .patch("/api/comments/this-is-not-a-comment")
+          .send({ inc_votes: 10 })
+          .expect(400)
+          .then(res => {
+            expect(res.body).to.eql({
+              msg: "Invalid input data"
+            });
+          });
+      });
+      it("PATCH 404 - throws an error when given an article id that doesn't exist", () => {
+        return request(app)
+          .patch("/api/comments/999")
+          .send({ inc_votes: 10 })
+          .expect(404)
+          .then(res => {
+            expect(res.body).to.eql({
+              msg: "Comment not found",
+              status: 404
+            });
+          });
       });
     });
   });

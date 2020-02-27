@@ -1,5 +1,8 @@
 const connection = require("../db/connection");
-const { fetchArticleById } = require("../models/articles.models");
+const {
+  fetchArticleById,
+  updateCommentVotesById
+} = require("../models/articles.models");
 
 exports.addNewComment = ({ username, body }, { article_id }) => {
   if (username === undefined || body === undefined) {
@@ -38,4 +41,18 @@ exports.fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
   ]).then(([comments, article]) => {
     return comments;
   });
+};
+
+exports.updateCommentVotesById = ({ comment_id }, { inc_votes }) => {
+  const votes = inc_votes;
+  return connection("comments")
+    .increment({ votes: votes })
+    .where({ comment_id })
+    .returning("*")
+    .then(comment => {
+      if (comment.length === 0) {
+        return Promise.reject({ status: 404, msg: "Comment not found" });
+      }
+      return comment[0];
+    });
 };
