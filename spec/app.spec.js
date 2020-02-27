@@ -519,6 +519,11 @@ describe("/api", () => {
             });
           });
       });
+      it("DELETE 204 - deletes the comment specified by the given id", () => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(204);
+      });
     });
   });
 });
