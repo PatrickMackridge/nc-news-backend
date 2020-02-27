@@ -81,7 +81,7 @@ describe("/api", () => {
           .expect(404)
           .then(res => {
             expect(res.body).to.eql({
-              msg: "This article does not exist",
+              msg: "Article not found",
               status: 404
             });
           });
@@ -92,7 +92,7 @@ describe("/api", () => {
           .expect(400)
           .then(res => {
             expect(res.body).to.eql({
-              msg: "Invalid data input type"
+              msg: "Invalid input data"
             });
           });
       });
@@ -139,7 +139,7 @@ describe("/api", () => {
           .expect(400)
           .then(res => {
             expect(res.body).to.eql({
-              msg: "Invalid data input type"
+              msg: "Invalid input data"
             });
           });
       });
@@ -150,7 +150,7 @@ describe("/api", () => {
           .expect(404)
           .then(res => {
             expect(res.body).to.eql({
-              msg: "This article does not exist",
+              msg: "Article not found",
               status: 404
             });
           });
@@ -161,7 +161,7 @@ describe("/api", () => {
           .send({ inc_votes: "LOADS OF VOTES!" })
           .expect(400)
           .then(res => {
-            expect(res.body).to.eql({ msg: "Invalid data input type" });
+            expect(res.body).to.eql({ msg: "Invalid input data" });
           });
       });
       it("PATCH 400 - throws an error when trying to update a value other than inc_votes", () => {
@@ -170,7 +170,7 @@ describe("/api", () => {
           .send({ username: "newUser" })
           .expect(400)
           .then(res => {
-            expect(res.body).to.eql({ msg: "Invalid data input type" });
+            expect(res.body).to.eql({ msg: "Invalid input data" });
           });
       });
       describe("/comments", () => {
@@ -202,7 +202,7 @@ describe("/api", () => {
             })
             .expect(400)
             .then(res => {
-              expect(res.body).to.eql({ msg: "Invalid data input type" });
+              expect(res.body).to.eql({ msg: "Invalid input data" });
             });
         });
         it("POST 404 - throws an error when given a non-existent article id", () => {
@@ -245,6 +245,91 @@ describe("/api", () => {
             .then(res => {
               expect(res.body).to.eql({
                 status: 400,
+                msg: "Invalid input data"
+              });
+            });
+        });
+        it("GET 200 - returns an array of all comments of the given article_id, sorted by most recent first by default", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(res => {
+              expect(res.body.comments).to.be.an("Array");
+              res.body.comments.forEach(comment => {
+                expect(comment).to.have.all.keys([
+                  "article_id",
+                  "comment_id",
+                  "votes",
+                  "created_at",
+                  "author",
+                  "body"
+                ]);
+              });
+              res.body.comments.forEach(comment => {
+                expect(comment.article_id).to.equal(1);
+              });
+              expect(res.body.comments).to.be.sortedBy("created_at", {
+                descending: true
+              });
+            });
+        });
+        it("GET 200 - returns an array of all comments of the given article_id, sorted by specified column in specified order", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=votes&&order=asc")
+            .expect(200)
+            .then(res => {
+              expect(res.body.comments).to.be.an("Array");
+              res.body.comments.forEach(comment => {
+                expect(comment).to.have.all.keys([
+                  "article_id",
+                  "comment_id",
+                  "votes",
+                  "created_at",
+                  "author",
+                  "body"
+                ]);
+              });
+              expect(res.body.comments).to.be.sortedBy("votes", {
+                descending: false
+              });
+            });
+        });
+        it("GET 200 - returns an empty array when passed an existent valid article id with no associated comments", () => {
+          return request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+            .then(res => {
+              expect(res.body.comments).to.be.an("Array");
+              expect(res.body.comments).to.eql([]);
+            });
+        });
+        it("GET 400 - throws an error when given an invalid article id", () => {
+          return request(app)
+            .get("/api/articles/ARTICLE/comments")
+            .expect(400)
+            .then(res => {
+              expect(res.body).to.eql({
+                msg: "Invalid input data"
+              });
+            });
+        });
+        it("GET 404 - throws an error when given a non-existent article", () => {
+          return request(app)
+            .get("/api/articles/999/comments")
+            .expect(404)
+            .then(res => {
+              expect(res.body).to.eql({
+                status: 404,
+                msg: "Article not found"
+              });
+            });
+        });
+        it("GET 400 - throws an error when trying to sort by a column that doesn't exist", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=madeUpColumn")
+            .expect(400)
+            .then(res => {
+              expect(res.body).to.eql({
                 msg: "Invalid input data"
               });
             });

@@ -12,7 +12,7 @@ exports.fetchArticleById = ({ article_id }) => {
       if (articleArr.length === 0) {
         return Promise.reject({
           status: 404,
-          msg: "This article does not exist"
+          msg: "Article not found"
         });
       }
       return articleArr[0];
@@ -27,7 +27,7 @@ exports.updateArticle = ({ article_id }, { inc_votes }) => {
     .then(updatedArticle => {
       if (updatedArticle.length === 0) {
         return Promise.reject({
-          msg: "This article does not exist",
+          msg: "Article not found",
           status: 404
         });
       }

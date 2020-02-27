@@ -7,9 +7,9 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handleSQLErrors = (err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({ msg: "Invalid data input type" });
-  } else if (err.code === "23503") {
+  const refObj = { err400s: ["22P02", "23503", "42703"] };
+
+  if (refObj.err400s.includes(err.code)) {
     res.status(400).send({ msg: "Invalid input data" });
   }
 };

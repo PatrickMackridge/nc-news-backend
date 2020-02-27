@@ -5,13 +5,19 @@ const {
   patchArticle
 } = require("../controllers/articles.controllers");
 
-const { postComment } = require("../controllers/comments.controllers");
+const {
+  postComment,
+  getCommentsByArticle
+} = require("../controllers/comments.controllers");
 
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
   .patch(patchArticle);
 
-articlesRouter.route("/:article_id/comments").post(postComment);
+articlesRouter
+  .route("/:article_id/comments")
+  .post(postComment)
+  .get(getCommentsByArticle);
 
 module.exports = articlesRouter;
