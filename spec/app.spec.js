@@ -55,8 +55,79 @@ describe("/api", () => {
       });
     });
   });
-  describe("/articles", () => {
-    describe("/:article_id", () => {
+  describe.only("/articles", () => {
+    it("GET 200 - returns an array of all articles, defaulting to sorted by most recent first", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles).to.be.an("Array");
+          res.body.articles.forEach(article => {
+            if (article.article_id === 1) {
+              expect(article.comment_count).to.equal("13");
+            }
+            expect(article).to.have.all.keys([
+              "author",
+              "title",
+              "article_id",
+              "topic",
+              "created_at",
+              "votes",
+              "comment_count"
+            ]);
+          });
+          expect(res.body.articles).to.be.sortedBy("created_at", {
+            descending: true
+          });
+        });
+    });
+    it("GET 200 - returns an array of all articles, sorted and ordered by the specified queries", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&&order=asc")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles).to.be.sortedBy("article_id", {
+            descending: false
+          });
+        });
+    });
+    it("GET 200 - returns an array of all articles, filtered by the author specified in the given query", () => {
+      return request(app)
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+        .then(res => {
+          res.body.articles.forEach(article => {
+            expect(article.author).to.equal("butter_bridge");
+          });
+        });
+    });
+    it("GET 200 - returns an array of all articles, filtered by the topic specified in the given query", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(res => {
+          res.body.articles.forEach(article => {
+            expect(article.topic).to.equal("mitch");
+          });
+        });
+    });
+    it("GET 200 - returns an empty array when given a user that has no associated articles", () => {
+      return request(app)
+        .get("/api/articles?author=lurker")
+        .expect(200)
+        .then(res => {
+          expect(res.body).to.eql({ articles: [] });
+        });
+    });
+    it("GET 200 - returns an empty array when given a topic that has no associated articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(res => {
+          expect(res.body).to.eql({ articles: [] });
+        });
+    });
+    xdescribe("/:article_id", () => {
       it("GET 200 - responds with the article object corresponding to the given article_id with added comment count", () => {
         return request(app)
           .get("/api/articles/1")

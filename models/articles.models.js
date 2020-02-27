@@ -34,3 +34,33 @@ exports.updateArticle = ({ article_id }, { inc_votes }) => {
       return updatedArticle[0];
     });
 };
+
+exports.fetchArticles = ({ sort_by, order, author, topic }) => {
+  return connection
+    .select(
+      "articles.author",
+      "articles.title",
+      "articles.article_id",
+      "articles.topic",
+      "articles.created_at",
+      "articles.votes"
+    )
+    .from("articles")
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .count({ comment_count: "comments.article_id" })
+    .groupBy("articles.article_id")
+    .orderBy(sort_by || "created_at", order || "desc")
+    .modify(query => {
+      if (author !== undefined) {
+        query.where({ "articles.author": author });
+      }
+    })
+    .modify(query => {
+      if (topic !== undefined) {
+        query.where({ "articles.topic": topic });
+      }
+    })
+    .then(articles => {
+      return articles;
+    });
+};
