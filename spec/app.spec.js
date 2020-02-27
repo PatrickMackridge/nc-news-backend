@@ -127,7 +127,39 @@ describe("/api", () => {
           expect(res.body).to.eql({ articles: [] });
         });
     });
-    xdescribe("/:article_id", () => {
+    it("GET 400 - throws an error when passed an invalid sort query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=NoColumnHere")
+        .expect(400)
+        .then(res => {
+          expect(res.body).to.eql({
+            msg: "Invalid input data"
+          });
+        });
+    });
+    it("GET 404 - throws an error when passed an author that doesn't exist", () => {
+      return request(app)
+        .get("/api/articles?author=CharlesDickens")
+        .expect(404)
+        .then(res => {
+          expect(res.body).to.eql({
+            status: 404,
+            msg: "User does not exist"
+          });
+        });
+    });
+    it("GET 404 - throws an error when passed a topic that doesn't exist", () => {
+      return request(app)
+        .get("/api/articles?topic=howToJavaScript")
+        .expect(404)
+        .then(res => {
+          expect(res.body).to.eql({
+            status: 404,
+            msg: "Topic does not exist"
+          });
+        });
+    });
+    describe("/:article_id", () => {
       it("GET 200 - responds with the article object corresponding to the given article_id with added comment count", () => {
         return request(app)
           .get("/api/articles/1")

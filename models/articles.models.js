@@ -36,6 +36,16 @@ exports.updateArticle = ({ article_id }, { inc_votes }) => {
 };
 
 exports.fetchArticles = ({ sort_by, order, author, topic }) => {
+  return Promise.all([
+    this.checkExistence("users", author, "username"),
+    this.checkExistence("topics", topic, "slug"),
+    this.retrieveArticles(sort_by, order, author, topic)
+  ]).then(([userCheck, topicCheck, articles]) => {
+    return articles;
+  });
+};
+
+exports.retrieveArticles = (sort_by, order, author, topic) => {
   return connection
     .select(
       "articles.author",
@@ -62,5 +72,27 @@ exports.fetchArticles = ({ sort_by, order, author, topic }) => {
     })
     .then(articles => {
       return articles;
+    });
+};
+
+exports.checkExistence = (table, checkVal, columnName) => {
+  return connection
+    .select("*")
+    .from(table)
+    .modify(query => {
+      if (checkVal !== undefined) {
+        query.where({ [columnName]: checkVal });
+      }
+    })
+    .then(result => {
+      if (result.length === 0) {
+        const valueName = table.slice(0, 1).toUpperCase() + table.slice(1, -1);
+        return Promise.reject({
+          status: 404,
+          msg: `${valueName} does not exist`
+        });
+      } else {
+        return result;
+      }
     });
 };
