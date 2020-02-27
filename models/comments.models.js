@@ -62,7 +62,10 @@ exports.removeCommentById = ({ comment_id }) => {
     .where({ comment_id })
     .returning("*")
     .delete()
-    .then(comment => {
-      return comment;
+    .then(deletedComment => {
+      if (deletedComment.length === 0) {
+        return Promise.reject({ status: 404, msg: "Comment not found" });
+      }
+      return deletedComment;
     });
 };

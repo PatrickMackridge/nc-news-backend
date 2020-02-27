@@ -441,7 +441,7 @@ describe("/api", () => {
     });
   });
   describe("/comments", () => {
-    describe.only("/:comment_id", () => {
+    describe("/:comment_id", () => {
       it("PATCH 200 - Updates the vote property of the comment specified by given id by the given amount and returns the updated comment object", () => {
         return request(app)
           .patch("/api/comments/2")
@@ -523,6 +523,22 @@ describe("/api", () => {
         return request(app)
           .delete("/api/comments/1")
           .expect(204);
+      });
+      it("DELETE 400 - throws an error when given an invalid comment id", () => {
+        return request(app)
+          .delete("/api/comments/I-demand-you-remove-this-comment-NOW")
+          .expect(400)
+          .then(err => {
+            expect(err.body).to.eql({ msg: "Invalid input data" });
+          });
+      });
+      it("DELETE 404 - throws an error when given a valid but non-existent comment id", () => {
+        return request(app)
+          .delete("/api/comments/999")
+          .expect(404)
+          .then(err => {
+            expect(err.body).to.eql({ status: 404, msg: "Comment not found" });
+          });
       });
     });
   });
