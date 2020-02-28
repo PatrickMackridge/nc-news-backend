@@ -10,7 +10,7 @@ exports.postComment = (req, res, next) => {
   const article_id = req.params;
   addNewComment(newComment, article_id)
     .then(comment => {
-      res.status(200).send({ comment });
+      res.status(201).send({ comment });
     })
     .catch(err => {
       next(err);

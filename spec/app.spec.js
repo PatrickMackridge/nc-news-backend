@@ -14,6 +14,22 @@ describe("/api", () => {
   beforeEach(() => {
     return connection.seed.run();
   });
+  it("GET 200 - responds with a json object of all available endpoints for this api", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(res => {
+        expect(res.body).to.be.an("Object");
+      });
+  });
+  it("DELETE 405 - Throws a method not allowed error when sent a delete request to the /api endpoint", () => {
+    return request(app)
+      .delete("/api")
+      .expect(405)
+      .then(err => {
+        expect(err.body).to.eql({ status: 405, msg: "Method not allowed" });
+      });
+  });
   describe("/topics", () => {
     it("GET 200 - responds with an object that contains an array of all topic objects with slug and description", () => {
       return request(app)
@@ -24,6 +40,18 @@ describe("/api", () => {
           res.body.topics.forEach(topic => {
             expect(topic).to.contain.keys("description", "slug");
           });
+        });
+    });
+    it("PATCH 405 - responds with a method not allowed error when sent a patch request not supported by the topics endpoint", () => {
+      return request(app)
+        .patch("/api/topics")
+        .send({
+          description: "Not cats",
+          slug: "dogs"
+        })
+        .expect(405)
+        .then(err => {
+          expect(err.body).to.eql({ status: 405, msg: "Method not allowed" });
         });
     });
   });
@@ -51,6 +79,18 @@ describe("/api", () => {
               msg: "This user does not exist",
               status: 404
             });
+          });
+      });
+      it("PUT 405 - responds with a method not allowed error when sent a put request to a username that already exists", () => {
+        return request(app)
+          .put("/api/users/butter_bridge")
+          .send({
+            username: "This id is mine now!",
+            name: "Cuckoo"
+          })
+          .expect(405)
+          .then(err => {
+            expect(err.body).to.eql({ status: 405, msg: "Method not allowed" });
           });
       });
     });
@@ -156,6 +196,21 @@ describe("/api", () => {
           expect(res.body).to.eql({
             status: 404,
             msg: "Topic does not exist"
+          });
+        });
+    });
+    it("PATCH 405 - responds with a method not allowed error when sent a patch request not supported by the articles endpoint", () => {
+      return request(app)
+        .patch("/api/articles")
+        .send({
+          author: "Me",
+          inc_votes: 10000
+        })
+        .expect(405)
+        .then(err => {
+          expect(err.body).to.eql({
+            status: 405,
+            msg: "Method not allowed"
           });
         });
     });
@@ -276,15 +331,27 @@ describe("/api", () => {
             expect(res.body).to.eql({ msg: "Invalid input data" });
           });
       });
+      it("PUT 405 - throws throws a method not allowed error when trying to put a new article at an address where one already exists", () => {
+        return request(app)
+          .put("/api/articles/1")
+          .send({ newArticle: "New Article HERE" })
+          .expect(405)
+          .then(err => {
+            expect(err.body).to.eql({
+              status: 405,
+              msg: "Method not allowed"
+            });
+          });
+      });
       describe("/comments", () => {
-        it("POST 200 - posts a new comment to the article specified by the article_id parameter", () => {
+        it("POST 201 - posts a new comment to the article specified by the article_id parameter", () => {
           return request(app)
             .post("/api/articles/1/comments")
             .send({
               username: "butter_bridge",
               body: "This article changed my life - FOR THE WORSE!!!"
             })
-            .expect(200)
+            .expect(201)
             .then(res => {
               expect(res.body.comment).to.have.all.keys([
                 "article_id",
@@ -308,31 +375,31 @@ describe("/api", () => {
               expect(res.body).to.eql({ msg: "Invalid input data" });
             });
         });
-        it("POST 404 - throws an error when given a non-existent article id", () => {
+        it("POST 422 - throws an un-processable entity error when given a non-existent article id", () => {
           return request(app)
             .post("/api/articles/999/comments")
             .send({
               username: "butter_bridge",
               body: "This article changed my life - FOR THE WORSE!!!"
             })
-            .expect(400)
+            .expect(422)
             .then(res => {
               expect(res.body).to.eql({
-                msg: "Invalid input data"
+                msg: "Un-processable entity"
               });
             });
         });
-        it("POST 400 - throws an error when given a non-existent username", () => {
+        it("POST 422 - throws an error when given a non-existent username", () => {
           return request(app)
             .post("/api/articles/1/comments")
             .send({
               username: "U.Z.A",
               body: "This article changed my life - FOR THE WORSE!!!"
             })
-            .expect(400)
+            .expect(422)
             .then(res => {
               expect(res.body).to.eql({
-                msg: "Invalid input data"
+                msg: "Un-processable entity"
               });
             });
         });
@@ -349,6 +416,18 @@ describe("/api", () => {
               expect(res.body).to.eql({
                 status: 400,
                 msg: "Invalid input data"
+              });
+            });
+        });
+        it("PUT 405 - throws throws a method not allowed error when trying to put a new comment at a specific article", () => {
+          return request(app)
+            .put("/api/articles/1/comments")
+            .send({ newComment: "I AM ANGRY1!!!" })
+            .expect(405)
+            .then(err => {
+              expect(err.body).to.eql({
+                status: 405,
+                msg: "Method not allowed"
               });
             });
         });
@@ -516,6 +595,18 @@ describe("/api", () => {
             expect(res.body).to.eql({
               msg: "Comment not found",
               status: 404
+            });
+          });
+      });
+      it("PUT 405 - throws throws a method not allowed error when trying to put a new comment at an id where one already exists", () => {
+        return request(app)
+          .put("/api/comments/1")
+          .send({ newComment: "I AM ANGRY1!!!" })
+          .expect(405)
+          .then(err => {
+            expect(err.body).to.eql({
+              status: 405,
+              msg: "Method not allowed"
             });
           });
       });

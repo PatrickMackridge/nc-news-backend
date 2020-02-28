@@ -6,22 +6,68 @@
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        { "slug": "football", "description": "Footie!" },
+        {
+          "description": "Code is love, code is life",
+          "slug": "coding"
+        }
+      ]
+    }
+  },
+  "GET users/:username": {
+    "description": "serves a user object specified by the given unique username provided",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "yooser",
+        "name": "Brian",
+        "avatar_url": "https: //www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all topics",
+    "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "author": "yooser",
+          "title": "The Best Article Ever Written",
+          "article_id": "1",
+          "body": "A mind blowingly great article...",
+          "topic": "Life, the universe and everything",
+          "created_at": "2018-11-20T12: 24: 03.000Z",
+          "votes": "42",
+          "comment_count": "99"
+        },
+        {
+          "author": "uzaToo",
+          "title": "Rubbish Article",
+          "article_id": "2",
+          "body": "A boring article that no-one read...",
+          "topic": "Slippers",
+          "created_at": "2019-04-10T12: 24: 03.000Z",
+          "votes": "-1",
+          "comment_count": "0"
         }
       ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article object specified by the given article_id parameter - includes a count of that article's comments",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "author": "yooser",
+        "title": "The Best Article Ever Written",
+        "article_id": "1",
+        "body": "A mind blowingly great article",
+        "topic": "Life, the universe and everything",
+        "created_at": "2018-11-20T12: 24: 03.000Z",
+        "votes": "42",
+        "comment_count": "99"
+      }
     }
   }
 }
