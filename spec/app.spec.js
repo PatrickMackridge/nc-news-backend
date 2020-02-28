@@ -543,3 +543,16 @@ describe("/api", () => {
     });
   });
 });
+describe("./*", () => {
+  it("404 - sends a does not exist error for any routes that do not have a specified endpoint", () => {
+    return request(app)
+      .get("/topics/mitch/articles")
+      .expect(404)
+      .then(err => {
+        expect(err.body).to.eql({
+          status: 404,
+          msg: "This route does not exist"
+        });
+      });
+  });
+});

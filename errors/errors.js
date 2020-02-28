@@ -13,3 +13,7 @@ exports.handleSQLErrors = (err, req, res, next) => {
     res.status(400).send({ msg: "Invalid input data" });
   }
 };
+
+exports.otherRoutes404 = (req, res, next) => {
+  res.status(404).send({ status: 404, msg: "This route does not exist" });
+};
