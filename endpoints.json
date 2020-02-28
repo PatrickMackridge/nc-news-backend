@@ -69,5 +69,88 @@
         "comment_count": "99"
       }
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Increments an article's votes property by the amount provided in the body",
+    "request body": { "inc_votes": "1" },
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "author": "yooser",
+        "title": "The Best Article Ever Written",
+        "article_id": "1",
+        "body": "A mind blowingly great article",
+        "topic": "Life, the universe and everything",
+        "created_at": "2018-11-20T12: 24: 03.000Z",
+        "votes": "43",
+        "comment_count": "99"
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Posts a new comment to the article specified by the article_id parameter",
+    "request body": {
+      "username": "yooser",
+      "body": "No-one cares about your slippers"
+    },
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "author": "yooser",
+        "title": "The Best Article Ever Written",
+        "article_id": "1",
+        "body": "A mind blowingly great article",
+        "topic": "Life, the universe and everything",
+        "created_at": "2018-11-20T12: 24: 03.000Z",
+        "votes": "43",
+        "comment_count": "99"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "Serves an array of comment objects belonging to article specified by the article_id parameter",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": "1",
+          "author": "yooser",
+          "article_id": 2,
+          "votes": "100",
+          "created_at": "2019-05-12T12: 24: 03.000Z",
+          "body": "No-one cares about your slippers"
+        },
+        {
+          "comment_id": "2",
+          "author": "UZA",
+          "article_id": 2,
+          "votes": "-10",
+          "created_at": "2019-05-13T12: 24: 03.000Z",
+          "body": "My slippers are great, shut your face!"
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Increments the comment's votes property specified with the comment_id parameter by the amount provided in the body",
+    "queries": [],
+    "request body": {
+      "inc_votes": "1"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": "1",
+        "author": "yooser",
+        "article_id": 2,
+        "votes": "101",
+        "created_at": "2019-05-12T12: 24: 03.000Z",
+        "body": "No-one cares about your slippers"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes the comment specified by the comment_id parameter",
+    "queries": [],
+    "exampleResponse": "None - 204"
   }
 }

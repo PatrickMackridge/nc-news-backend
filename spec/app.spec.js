@@ -3,6 +3,7 @@ const request = require("supertest");
 const chai = require("chai");
 const chaiSorted = require("sams-chai-sorted");
 const { expect } = chai;
+const endpoints = require("../endpoints");
 
 chai.use(chaiSorted);
 
@@ -20,6 +21,7 @@ describe("/api", () => {
       .expect(200)
       .then(res => {
         expect(res.body).to.be.an("Object");
+        expect(res.body).to.eql(endpoints);
       });
   });
   it("DELETE 405 - Throws a method not allowed error when sent a delete request to the /api endpoint", () => {
