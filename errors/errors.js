@@ -8,11 +8,11 @@ exports.handleCustomErrors = (err, req, res, next) => {
 
 exports.handleSQLErrors = (err, req, res, next) => {
   const refObj = {
-    "22P02": [400, { msg: "Invalid input data" }],
-    "42703": [400, { msg: "Invalid input data" }],
-    "23503": [422, { msg: "Un-processable entity" }]
+    "22P02": { status: 400, msg: "Invalid input data" },
+    "42703": { status: 400, msg: "Invalid input data" },
+    "23503": { status: 422, msg: "Un-processable entity" }
   };
-  res.status(refObj[err.code][0]).send(refObj[err.code][1]);
+  res.status(refObj[err.code].status).send(refObj[err.code]);
 
   // if (refObj.err400s.includes(err.code)) {
   //   res.status(400).send({ msg: "Invalid input data" });

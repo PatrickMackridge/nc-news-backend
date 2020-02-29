@@ -175,6 +175,7 @@ describe("/api", () => {
         .expect(400)
         .then(res => {
           expect(res.body).to.eql({
+            status: 400,
             msg: "Invalid input data"
           });
         });
@@ -252,6 +253,7 @@ describe("/api", () => {
           .expect(400)
           .then(res => {
             expect(res.body).to.eql({
+              status: 400,
               msg: "Invalid input data"
             });
           });
@@ -299,6 +301,7 @@ describe("/api", () => {
           .expect(400)
           .then(res => {
             expect(res.body).to.eql({
+              status: 400,
               msg: "Invalid input data"
             });
           });
@@ -321,7 +324,7 @@ describe("/api", () => {
           .send({ inc_votes: "LOADS OF VOTES!" })
           .expect(400)
           .then(res => {
-            expect(res.body).to.eql({ msg: "Invalid input data" });
+            expect(res.body).to.eql({ status: 400, msg: "Invalid input data" });
           });
       });
       it("PATCH 400 - throws an error when trying to update a value other than inc_votes", () => {
@@ -330,7 +333,7 @@ describe("/api", () => {
           .send({ username: "newUser" })
           .expect(400)
           .then(res => {
-            expect(res.body).to.eql({ msg: "Invalid input data" });
+            expect(res.body).to.eql({ status: 400, msg: "Invalid input data" });
           });
       });
       it("PUT 405 - throws throws a method not allowed error when trying to put a new article at an address where one already exists", () => {
@@ -374,7 +377,10 @@ describe("/api", () => {
             })
             .expect(400)
             .then(res => {
-              expect(res.body).to.eql({ msg: "Invalid input data" });
+              expect(res.body).to.eql({
+                status: 400,
+                msg: "Invalid input data"
+              });
             });
         });
         it("POST 422 - throws an un-processable entity error when given a non-existent article id", () => {
@@ -387,6 +393,7 @@ describe("/api", () => {
             .expect(422)
             .then(res => {
               expect(res.body).to.eql({
+                status: 422,
                 msg: "Un-processable entity"
               });
             });
@@ -401,6 +408,7 @@ describe("/api", () => {
             .expect(422)
             .then(res => {
               expect(res.body).to.eql({
+                status: 422,
                 msg: "Un-processable entity"
               });
             });
@@ -493,6 +501,7 @@ describe("/api", () => {
             .expect(400)
             .then(res => {
               expect(res.body).to.eql({
+                status: 400,
                 msg: "Invalid input data"
               });
             });
@@ -514,6 +523,7 @@ describe("/api", () => {
             .expect(400)
             .then(res => {
               expect(res.body).to.eql({
+                status: 400,
                 msg: "Invalid input data"
               });
             });
@@ -565,7 +575,7 @@ describe("/api", () => {
           .send({ inc_votes: "LOADS OF VOTES!" })
           .expect(400)
           .then(res => {
-            expect(res.body).to.eql({ msg: "Invalid input data" });
+            expect(res.body).to.eql({ status: 400, msg: "Invalid input data" });
           });
       });
       it("PATCH 400 - throws an error when trying to update a value other than inc_votes", () => {
@@ -574,7 +584,7 @@ describe("/api", () => {
           .send({ username: "newUser" })
           .expect(400)
           .then(res => {
-            expect(res.body).to.eql({ msg: "Invalid input data" });
+            expect(res.body).to.eql({ status: 400, msg: "Invalid input data" });
           });
       });
       it("PATCH 400 - throws an error when given an invalid comment id", () => {
@@ -584,6 +594,7 @@ describe("/api", () => {
           .expect(400)
           .then(res => {
             expect(res.body).to.eql({
+              status: 400,
               msg: "Invalid input data"
             });
           });
@@ -622,7 +633,7 @@ describe("/api", () => {
           .delete("/api/comments/I-demand-you-remove-this-comment-NOW")
           .expect(400)
           .then(err => {
-            expect(err.body).to.eql({ msg: "Invalid input data" });
+            expect(err.body).to.eql({ status: 400, msg: "Invalid input data" });
           });
       });
       it("DELETE 404 - throws an error when given a valid but non-existent comment id", () => {
