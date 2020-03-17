@@ -5,8 +5,10 @@ const {
   handleSQLErrors,
   handleAllOtherRoutes404
 } = require("./errors/errors");
-
 const app = express();
+const cors = require("cors");
+
+app.use(cors());
 
 app.use(express.json());
 
