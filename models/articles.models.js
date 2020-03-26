@@ -31,7 +31,7 @@ exports.updateArticle = ({ article_id }, { inc_votes }) => {
           status: 404
         });
       }
-      return updatedArticle[0];
+      return this.fetchArticleById({ article_id });
     });
 };
 

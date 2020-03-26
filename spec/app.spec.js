@@ -10,11 +10,11 @@ chai.use(chaiSorted);
 const connection = require("../db/connection");
 const app = require("../app");
 
+after(() => connection.destroy());
+beforeEach(() => {
+  return connection.seed.run();
+});
 describe("/api", () => {
-  after(() => connection.destroy());
-  beforeEach(() => {
-    return connection.seed.run();
-  });
   it("GET 200 - responds with a json object of all available endpoints for this api", () => {
     return request(app)
       .get("/api")
@@ -271,7 +271,8 @@ describe("/api", () => {
               "votes",
               "topic",
               "author",
-              "created_at"
+              "created_at",
+              "comment_count"
             ]);
             expect(res.body.article.votes).to.equal(101);
           });
@@ -289,7 +290,8 @@ describe("/api", () => {
               "votes",
               "topic",
               "author",
-              "created_at"
+              "created_at",
+              "comment_count"
             ]);
             expect(res.body.article.votes).to.equal(-100);
           });
