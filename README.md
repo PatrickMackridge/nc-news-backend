@@ -43,7 +43,7 @@ Feel free to fork and clone this repository if you'd like to run it yourself, or
 
 ## Requirements
 
-You must be using Node JS version 13.01.0 or higher to run this repository. Use the terminal command node -v to check your current version
+You must be using Node JS version 13.01.0 or higher to run this repository. Use the terminal command `node -v` to check your current version
 
 ## Running this project locally
 
